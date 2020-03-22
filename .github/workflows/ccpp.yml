@@ -13,6 +13,8 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
+    - name: install deps
+      run: sudo apt -y install libssl-dev luajit lua5.1 liblua5.1-dev libzmq3-dev autoconf pkg-config gcc build-essential lua-bitop
     - name: autogen
       run: ./autogen.sh
     - name: configure
