@@ -20,50 +20,58 @@
 
 ===========================================================================
 */
-
 #include "../../common/socket.h"
-
 #include "menu_merit.h"
 
 #include "../entities/charentity.h"
 #include "../utils/charutils.h"
+#include "../utils/blueutils.h"
 
 
 CMenuMeritPacket::CMenuMeritPacket(CCharEntity* PChar) 
 {
 	this->type = 0x63;
-	this->size = 0x08;
-	
-	ref<uint8>(0x04) = 0x02;
-	ref<uint8>(0x06) = 0x0C;
 
-    ref<uint16>(0x08) = PChar->PMeritPoints->GetLimitPoints();
-    ref<uint8>(0x0A) = PChar->PMeritPoints->GetMeritPoints();
-
-	uint8 flag = 0x00;
+	uint16 meritFlags = 0x0000;
 
 	if (PChar->jobs.job[PChar->GetMJob()] >= 75 && charutils::hasKeyItem(PChar, 606))			// keyitem Limit Breaker
 	{
-		flag |= 0x20;
+		// set merit points enabled flag
+		meritFlags |= 0x2000;
+
 		if (PChar->MeritMode)
 		{
-			flag |= 0x80;
+			//set merit mode flag
+			meritFlags |= 0x8000;
+		}
+
+		if ((PChar->jobs.job[PChar->GetMJob()] >= PChar->jobs.genkai && PChar->jobs.exp[PChar->GetMJob()] == charutils::GetExpNEXTLevel(PChar->jobs.job[PChar->GetMJob()]) - 1) 
+			|| PChar->MeritMode)
+		{
+			// set capped exp flag
+			meritFlags |= 0x4000;
 		}
 	}
 
-	//capped EXP
-	if ((PChar->jobs.job[PChar->GetMJob()] >= PChar->jobs.genkai && PChar->jobs.exp[PChar->GetMJob()] == charutils::GetExpNEXTLevel(PChar->jobs.job[PChar->GetMJob()]) - 1) 
-		|| PChar->MeritMode)
-	{
-		flag |= 0x40;
-	}
+	uint8 addlBluPoints = std::clamp<uint8>(blueutils::GetTotalBlueMagicPoints(PChar) - 55, 0, map_config.max_blu_points);
+	uint8 meritPoints = PChar->PMeritPoints->GetMeritPoints();
+	uint16 bluPoints = (addlBluPoints) << 7;
+	uint16 pointsData = meritFlags + bluPoints + meritPoints;
 
-	ref<uint8>(0x0B) = flag;
+	// ver 30200217_0 first packet
+	
+	this->size = 0x10;
+	
+	memset(data + 4, 0, sizeof(PACKET_SIZE - 4));
+	
+	ref<uint8>(0x04) = 0x02;
+	ref<uint8>(0x06) = 0x0C;	
+	ref<uint16>(0x0A) = pointsData;
     ref<uint8>(0x0C) = map_config.max_merit_points + PChar->PMeritPoints->GetMeritValue(MERIT_MAX_MERIT, PChar);
 
     PChar->pushPacket(new CBasicPacket(*this));
 
-    // ver 30121205_4 second packet
+	// ver 30121205_4 second packet
 
     this->size = 0x6E;
 

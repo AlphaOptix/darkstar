@@ -15,9 +15,11 @@ function onSpellCast(caster, target, spell)
     local hp = math.ceil(20 * (1 + 0.01 * caster:getMod(dsp.mod.REGEN_MULTIPLIER))) -- spell base times gear multipliers
     hp = hp + caster:getMerit(dsp.merit.REGEN_EFFECT) -- bonus hp from merits
     hp = hp + caster:getMod(dsp.mod.LIGHT_ARTS_REGEN) -- bonus hp from light arts
+    hp = hp + caster:getMod(dsp.mod.REGEN_BONUS)      -- bonus hp from jobpoint gifts
 
     local duration = calculateDuration(60 + caster:getMod(dsp.mod.REGEN_DURATION), spell:getSkillType(), spell:getSpellGroup(), caster, target)
     duration = calculateDurationForLvl(duration, 66, target:getMainLvl())
+    duration = duration + (caster:getJobPointValue(dsp.jp.REGEN_DURATION) * 3)
 
     if target:addStatusEffect(dsp.effect.REGEN, hp, 0, duration) then
         spell:setMsg(dsp.msg.basic.MAGIC_GAIN_EFFECT)

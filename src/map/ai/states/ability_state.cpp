@@ -33,6 +33,7 @@ This file is part of DarkStar-server source code.
 #include "../../utils/battleutils.h"
 #include "../../../common/utils.h"
 #include "../../utils/charutils.h"
+#include "../../job_points.h"
 
 CAbilityState::CAbilityState(CBattleEntity* PEntity, uint16 targid, uint16 abilityid) :
     CState(PEntity, targid),
@@ -85,6 +86,7 @@ void CAbilityState::ApplyEnmity()
             !(m_PAbility->getCE() == 0 && m_PAbility->getVE() == 0))
         {
             CMobEntity* mob = (CMobEntity*)PTarget;
+
             if (!mob->CalledForHelp())
             {
                 mob->m_OwnerID.id = m_PEntity->id;

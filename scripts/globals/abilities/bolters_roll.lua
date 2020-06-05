@@ -49,7 +49,7 @@ function onUseAbility(caster,target,ability,action)
 end
 
 function applyRoll(caster,target,ability,action,total)
-    local duration = 300 + caster:getMerit(dsp.merit.WINNING_STREAK) + caster:getMod(dsp.mod.PHANTOM_DURATION)
+    local duration = 300 + caster:getMerit(dsp.merit.WINNING_STREAK) + caster:getMod(dsp.mod.PHANTOM_DURATION) + (caster:getJobPointValue(dsp.jpPHANTOM_ROLL_DURATION) * 2)
     local effectpowers = {6, 6, 16, 8, 8, 10, 10, 12, 4, 14, 20, 0}
     local effectpower = effectpowers[total]
 -- Apply Additional Phantom Roll+ Buff

@@ -29,8 +29,9 @@ function onUseAbility(player, target, ability)
         end
     end
 
+    local jp_value = target:getJobPointValue(dsp.jp.CHAKRA_EFFECT) * 10
     local recover = player:getStat(dsp.mod.VIT) * (2 + player:getMod(dsp.mod.CHAKRA_MULT) / 10) -- TODO: Figure out "function of level" addition (August 2017 update)
-    player:setHP(player:getHP() + recover)
+    player:setHP(player:getHP() + recover + jp_value)
 
     local merits = player:getMerit(dsp.merit.INVIGORATE)
     if merits > 0 then

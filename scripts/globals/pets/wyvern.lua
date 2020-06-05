@@ -152,6 +152,9 @@ function onMobSpawn(mob)
                 master:addMod(dsp.mod.ATTP, 4 * diff)
                 master:addMod(dsp.mod.DEFP, 4 * diff)
                 master:addMod(dsp.mod.HASTE_ABILITY, 200 * diff)
+                if dsp:getMod(dsp.mod.WYVERN_ATTR_DBLATK) then
+                    master:addMod(dsp.mod.DOUBLE_ATTACK, dsp:getMod(dsp.mod.WYVERN_ATTR_DBLATK) * diff)
+                end
             end
             pet:setLocalVar("wyvern_exp", prev_exp + exp)
             pet:setLocalVar("level_Ups", pet:getLocalVar("level_Ups") + diff)
@@ -166,6 +169,9 @@ function onMobDeath(mob, player)
         master:delMod(dsp.mod.ATTP, 4 * numLvls)
         master:delMod(dsp.mod.DEFP, 4 * numLvls)
         master:delMod(dsp.mod.HASTE_ABILITY, 200 * numLvls)
+        if dsp:getMod(dsp.mod.WYVERN_ATTR_DBLATK) then
+            master:delMod(dsp.mod.DOUBLE_ATTACK, dsp:getMod(dsp.mod.WYVERN_ATTR_DBLATK) * numLvls)
+        end     
     end
     master:removeListener("PET_WYVERN_WS")
     master:removeListener("PET_WYVERN_MAGIC")

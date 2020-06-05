@@ -15,6 +15,9 @@ function onEffectGain(target,effect) --power=30 initially, subpower=20 for enmit
     if yoninMerits ~= 0 then
         target:addMod(dsp.mod.HP, yoninMerits)
     end
+
+    local jp_value = target:getJobPointValue(dsp.jp.YONIN_EFFECT)
+    target:addMod(dsp.mod.EVA, 2 * jp_value)
 end
 
 function onEffectTick(target,effect)
@@ -38,4 +41,7 @@ function onEffectLose(target,effect)
     if yoninMerits ~= 0 then
         target:delMod(dsp.mod.HP, yoninMerits)
     end
+
+    local jp_value = target:getJobPointValue(dsp.jp.YONIN_EFFECT)
+    target:delMod(dsp.mod.EVA, 2 * jp_value)
 end

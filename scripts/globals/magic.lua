@@ -214,6 +214,16 @@ function getCurePower(caster,isBlueMagic)
     local MND = caster:getStat(dsp.mod.MND);
     local VIT = caster:getStat(dsp.mod.VIT);
     local skill = caster:getSkillLevel(dsp.skill.HEALING_MAGIC);
+
+    if isBlueMagic then
+        local bluStatBonus = 1;
+        if caster:getMod(dsp.mod.BLUE_MAGIC_ATTR_POTENCY) then
+            bluStatBonus = 1 + (caster:getMod(dsp.mod.BLUE_MAGIC_ATTR_POTENCY) / 100);
+        end
+        MND = MND * bluStatBonus;
+        VIT = VIT * bluStatBonus;
+    end
+
     local power = math.floor(MND/2) + math.floor(VIT/4) + skill;
     return power;
 end;
@@ -221,6 +231,16 @@ function getCurePowerOld(caster)
     local MND = caster:getStat(dsp.mod.MND);
     local VIT = caster:getStat(dsp.mod.VIT);
     local skill = caster:getSkillLevel(dsp.skill.HEALING_MAGIC); -- it's healing magic skill for the BLU cures as well
+
+    if isBlueMagic then
+        local bluStatBonus = 1;
+        if caster:getMod(dsp.mod.BLUE_MAGIC_ATTR_POTENCY) then
+            bluStatBonus = 1 + (caster:getMod(dsp.mod.BLUE_MAGIC_ATTR_POTENCY) / 100);
+        end
+        MND = MND * bluStatBonus;
+        VIT = VIT * bluStatBonus;
+    end
+
     local power = ((3 * MND) + VIT + (3 * math.floor(skill/5)));
     return power;
 end;
@@ -302,6 +322,8 @@ function getCureFinal(caster, spell, basecure, minCure, isBlueMagic)
     end
 
     local final = math.floor(math.floor(math.floor(math.floor(basecure) * potency) * dayWeatherBonus) * rapture) * dSeal;
+
+    --whm job point afflatus solace
     return final;
 end;
 
@@ -446,6 +468,15 @@ function getMagicHitRate(caster, target, skillType, element, percentBonus, bonus
     magicacc = magicacc + caster:getMerit(dsp.merit.MAGIC_ACCURACY)
 
     magicacc = magicacc + caster:getMerit(dsp.merit.NIN_MAGIC_ACCURACY)
+
+    -- JP accuracy bonus
+    if (caster:getMainJob() == dsp.job.SCH) then
+        if (caster:hasStatusEffect(dsp.effect.LIGHT_ARTS) and caster:hasStatusEffect(dsp.effect.PENURY)) then
+            magicacc = magicacc + caster:getJobPointValue(dsp.jp.STRATEGEM_EFFECT_I)
+        elseif (caster:hasStatusEffect(dsp.effect.DARK_ARTS) and caster:hasStatusEffect(dsp.effect.PARSIMONY)) then
+            magicacc = magicacc + caster:getJobPointValue(dsp.jp.STRATEGEM_EFFECT_I)
+        end
+    end
 
     -- Base magic evasion (base magic evasion plus resistances(players), plus elemental defense(mobs)
     local magiceva = target:getMod(dsp.mod.MEVA) + resMod;
@@ -594,6 +625,23 @@ function getSpellBonusAcc(caster, target, spell, params)
     --add acc for RDM group 1 merits
     if (element > 0 and element <= 6) then
         magicAccBonus = magicAccBonus + caster:getMerit(rdmMerit[element]);
+    end
+
+    --rdm job point: during saboteur, enfeebling macc +2
+    if (skill == dsp.skill.ENFEEBLING_MAGIC and caster:hasStatusEffect(dsp.effect.SABOTEUR)) then
+        local jp_value = caster:getJobPointValue(dsp.jp.SABOTEUR_EFFECT)
+        magicAccBonus = magicAccBonus + (jp_value * 2)
+    end
+
+    --blm job point: macc bonus +1
+    magicAccBonus = magicAccBonus + caster:getJobPointValue(dsp.jp.BLM_MAGIC_ACC_BONUS)
+
+    --whm job point: macc bonus +1
+    magicAccBonus = magicAccBonus + caster:getJobPointValue(dsp.jp.WHM_MAGIC_ACC_BONUS)
+
+    --ninja job point
+    if(skill == dsp.skill.NINJUTSU) then
+        magicAccBonus = magicAccBonus + caster:getJobPointValue(dsp.jp.NINJITSU_ACC_BONUS)
     end
 
     -- BLU mag acc merits - nuke acc is handled in bluemagic.lua
@@ -752,6 +800,9 @@ function calculateMagicBurst(caster, spell, target, params)
         modburst = modburst + (caster:getMerit(dsp.merit.INNIN_EFFECT)/100)
     end
 
+    -- blm job point: magic burst damage
+    modburst = modburst + (caster:getJobPointValue(dsp.jp.MAGIC_BURST_DMG_BONUS)/100)
+
     -- Cap bonuses from first multiplier at 40% or 1.4
     if (modburst > 1.4) then
         modburst = 1.4;
@@ -883,6 +934,10 @@ function addBonuses(caster, spell, target, dmg, params)
                 mdefBarBonus = target:getStatusEffect(dsp.magic.barSpell[ele]):getSubPower();
             end
         end
+
+        mab = mab + caster:getJobPointValue(dsp.jp.RDM_MAGIC_ATK_BONUS);
+        mab = mab + caster:getJobPointValue(dsp.jp.GEO_MAGIC_ATK_BONUS);
+
         mabbonus = (100 + mab) / (100 + target:getMod(dsp.mod.MDEF) + mdefBarBonus);
     end
 
@@ -891,6 +946,17 @@ function addBonuses(caster, spell, target, dmg, params)
     end
 
     dmg = math.floor(dmg * mabbonus);
+
+    -- JP MDMG Bonus for SCH
+    if (caster:getMainJob() == dsp.job.SCH) then
+        local jp_value = caster:getJobPointValue(dsp.jp.STRATEGEM_EFFECT_III) * 2
+        local group = spell:getSpellGroup()
+        if (group == dsp.magic.spellGroup.WHITE and caster:hasStatusEffect(dsp.effect.RAPTURE)) then
+            dmg = dmg + jp_value
+        elseif (group == dsp.magic.spellGroup.BLACK and caster:hasStatusEffect(dsp.effect.EBULLIENCE)) then
+            dmg = dmg + jp_vaule
+        end
+    end
 
     if (caster:hasStatusEffect(dsp.effect.EBULLIENCE)) then
         dmg = dmg * (1.2 + caster:getMod(dsp.mod.EBULLIENCE_AMOUNT)/100);
@@ -1054,6 +1120,12 @@ function getHelixDuration(caster)
     elseif (casterLevel <= 99) then
         duration = 90;
     end
+
+    if (caster:hasStatusEffect(dsp.effect.DARK_ARTS)) then
+        local jp_value = caster:getJobPointValue(dsp.jp.DARK_ARTS_EFFECT)
+        duration = duration + (2 * jp_value)
+    end
+
     return duration;
 end;
 
@@ -1176,6 +1248,20 @@ function doElementalNuke(caster, spell, target, spellParams)
         local resistBonus = spellParams.resistBonus;
         local mDMG = caster:getMod(dsp.mod.MAGIC_DAMAGE);
 
+        -- blm job point: manafont elemental magic damage +3
+        if caster:hasStatusEffect(dsp.effect.MANAFONT) then
+            mDMG = mDMG + (caster:getJobPointValue(dsp.jp.MANAFONT_EFFECT) * 3);
+        end
+
+        -- blm job point: with manawell mDMG +1
+        if caster:hasStatusEffect(dsp.effect.MANAWELL) then
+            mDMG = mDMG + caster:getJobPointValue(dsp.jp.MANAWELL_EFFECT)
+            caster:delStatusEffectSilent(dsp.effect.MANAWELL);
+        end
+
+        -- blm job point: magic damage bonus
+        mDMG = mDMG + caster:getJobPointValue(dsp.jp.MAGIC_DMG_BONUS)
+
         --[[
                 Calculate base damage:
                 D = mDMG + V + (dINT × M)
@@ -1274,10 +1360,12 @@ function doNuke(caster, target, spell, params)
                 ninSkillBonus = 100 + math.floor((caster:getSkillLevel(dsp.skill.NINJUTSU) - 275)/2);
             end
             ninSkillBonus = utils.clamp(ninSkillBonus, 100, 200); -- bonus caps at +100%, and does not go negative
+            dmg = dmg + (caster:getJobPointValue(dsp.jp.ELEM_NINJITSU_EFFECT) * 2)
             dmg = dmg * ninSkillBonus/100;
         end
         -- boost with Futae
         if (caster:hasStatusEffect(dsp.effect.FUTAE)) then
+            dmg = dmg + (caster:getJobPointValue(dsp.jp.FUTAE_EFECT) * 5)
             dmg = math.floor(dmg * 1.50);
             caster:delStatusEffect(dsp.effect.FUTAE);
         end
@@ -1342,6 +1430,9 @@ function calculateDuration(duration, magicSkill, spellGroup, caster, target, use
         if caster:hasStatusEffect(dsp.effect.PERPETUANCE) and spellGroup == dsp.magic.spellGroup.WHITE then
             duration  = duration * 2
         end
+
+        -- rdm job point: enhancing duration +1 second
+        duration = duration + caster:getJobPointValue(dsp.jp.ENHANCING_DURATION)
     elseif magicSkill == dsp.skill.ENFEEBLING_MAGIC then -- Enfeebling Magic
         if caster:hasStatusEffect(dsp.effect.SABOTEUR) then
             duration = duration * 2
@@ -1349,6 +1440,15 @@ function calculateDuration(duration, magicSkill, spellGroup, caster, target, use
 
         -- After Saboteur according to bg-wiki
         duration = duration + caster:getMerit(dsp.merit.ENFEEBLING_MAGIC_DURATION)
+
+        -- rdm job point: enfeebling magic duration +1 second
+        duration = duration + caster:getJobPointValue(dsp.jp.ENFEEBLE_DURATION)
+
+        if (caster:hasStatusEffect(dsp.effect.STYMIE) and target:canGainStatusEffect(effect)) then
+            duration = duration + caster:getJobPointValue(dsp.jp.STYMIE_EFFECT)
+        end
+    elseif magicSkill == dsp.skill.NINJUTSU then -- Ninjutsu
+        duration = duration + (duration * caster:getMod(dsp.mod.NINJUTSU_DURATION) / 100)
     end
 
     return math.floor(duration)

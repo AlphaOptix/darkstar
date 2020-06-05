@@ -24,6 +24,12 @@ function onUseAbility(player,target,ability)
     if (player:getMainJob() == dsp.job.SCH and player:getMainLvl() >= 20) then
         helixbonus = math.floor(player:getMainLvl() / 4)
     end
+
+    local jp_value = player:getJobPointValue(dsp.jp.TABULA_RASA_EFFECT)
+    if (jp_value > 0) then
+        player:addMP(player:getMaxMP() * 0.02 * jp_value)
+    end
+
     player:resetRecast(dsp.recast.ABILITY, 228)
     player:resetRecast(dsp.recast.ABILITY, 231)
     player:resetRecast(dsp.recast.ABILITY, 232)

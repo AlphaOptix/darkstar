@@ -27,6 +27,7 @@
 #include "../../common/cbasetypes.h"
 
 #include "basic.h"
+#include "../job_points.h"
 
 
 /************************************************************************

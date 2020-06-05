@@ -105,6 +105,11 @@ CCharUpdatePacket::CCharUpdatePacket(CCharEntity* PChar)
     }
     ref<uint64>(0x4C) = PChar->StatusEffectContainer->m_Flags;
 
+    if (PChar->getMod(Mod::SUPERIOR_LEVEL) == 5 && PChar->m_jobmasterdisp)
+    {
+        ref<uint8>(0x58) = 0x80;
+    }
+
     if (PChar->animation == ANIMATION_MOUNT)
         ref<uint16>(0x5B) = PChar->StatusEffectContainer->GetStatusEffect(EFFECT_MOUNTED)->GetPower();
 }

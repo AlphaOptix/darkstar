@@ -6,6 +6,8 @@ import unnamed_flags
 import char_unlock_table_columns
 import HP_masks_to_blobs
 import crystal_storage
+import add_jobmasterdisp_to_chars
+import add_new_jp_item_mods
 
 credentials = {}
 db = None
@@ -78,6 +80,8 @@ def run_all_migrations():
     run_migration(char_unlock_table_columns)
     run_migration(HP_masks_to_blobs)
     run_migration(crystal_storage)
+    run_migration(add_jobmasterdisp_to_chars)
+    run_migration(add_new_jp_item_mods)
     close()
 
     print("Finished running all migrations")

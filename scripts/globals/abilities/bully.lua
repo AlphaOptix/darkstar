@@ -15,6 +15,7 @@ function onAbilityCheck(player,target,ability)
 end
 
 function onUseAbility(player,target,ability)
-    target:addStatusEffectEx(dsp.effect.DOUBT, dsp.effect.INTIMIDATE, 15, 0, 30)
+    local jp_value = player:getJobPointValue(dsp.jp.BULLY_EFFECT)
+    target:addStatusEffectEx(dsp.effect.DOUBT, dsp.effect.INTIMIDATE, 15 + jp_value, 0, 30)
     return dsp.effect.INTIMIDATE
 end

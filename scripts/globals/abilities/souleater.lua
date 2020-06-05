@@ -14,5 +14,6 @@ function onAbilityCheck(player,target,ability)
 end
 
 function onUseAbility(player,target,ability)
-   player:addStatusEffect(dsp.effect.SOULEATER,1,0,60)
+    local jp_value = target:getJobPointValue(dsp.jp.SOULEATER_DURATION)
+    player:addStatusEffect(dsp.effect.SOULEATER,1,0,60 + jp_value)
 end

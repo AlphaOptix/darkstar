@@ -25,7 +25,7 @@ function onEffectTick(target,effect)
     local store = effect:getPower() + basemp + bonus
 
     local limit = math.floor((target:getBaseHP() + target:getMod(dsp.mod.HP) + target:getMerit(dsp.merit.MAX_HP)) / 4) +
-        target:getMerit(dsp.merit.MAX_SUBLIMATION)
+        target:getMerit(dsp.merit.MAX_SUBLIMATION) + (3* target:getJobPointValue(dsp.job.SUBLIMATION_EFFECT))
 
     if not (target:getHPP() < 51 ) then
         if (target:hasStatusEffect(dsp.effect.STONESKIN)) then

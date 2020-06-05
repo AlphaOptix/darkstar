@@ -73,6 +73,7 @@
 #include "../ai/states/magic_state.h"
 #include "../utils/petutils.h"
 #include "zoneutils.h"
+#include "../job_points.h"
 
 
 /************************************************************************
@@ -938,7 +939,15 @@ namespace battleutils
                 Action->additionalEffect = SUBEFFECT_HP_DRAIN;
                 Action->addEffectMessage = 161;
 
-                Action->addEffectParam = PAttacker->addHP(Action->param);
+                // 2% additional per job point
+                uint32 absorbed = Action->param;
+                if (PAttacker->objtype == TYPE_PC) {
+                    absorbed += (uint32)floor(
+                        absorbed * 0.02f * static_cast<CCharEntity*>(PAttacker)->PJobPoints->GetJobPointValue(JP_BLOOD_WEAPON_EFFECT)
+                    );
+                }
+
+                Action->addEffectParam = PAttacker->addHP(absorbed);
 
                 if (PChar != nullptr) {
                     PChar->updatemask |= UPDATE_HP;
@@ -2645,10 +2654,19 @@ namespace battleutils
             if (PEntity->StatusEffectContainer->HasStatusEffect(EFFECT_HASSO))
             {
                 uint16 zanshin = PEntity->getMod(Mod::ZANSHIN);
-                if (PEntity->objtype == TYPE_PC)
-                    zanshin += ((CCharEntity*)PEntity)->PMeritPoints->GetMeritValue(MERIT_ZASHIN_ATTACK_RATE, (CCharEntity*)PEntity);
+                float trueZanshin = std::clamp(0.0f, zanshin * 0.25f, 25.0f);
+                
+                if (PEntity->objtype == TYPE_PC) 
+                {
+                    auto PChar = dynamic_cast<CCharEntity *>(PEntity);
+                    auto zanshinBonus = PChar->getMod(Mod::HASSO_SEIGAN_ZANSHIN_CAP) / 100;
+                    
+                    zanshin += PChar->PMeritPoints->GetMeritValue(MERIT_ZASHIN_ATTACK_RATE, (CCharEntity*)PEntity);
+                    
+                    trueZanshin = std::clamp(0.0f, zanshin * 0.25f, 25.0f + zanshinBonus);
+                }
 
-                if (dsprand::GetRandomNumber(100) < (zanshin / 4))
+                if (dsprand::GetRandomNumber(100) < trueZanshin)
                     num++;
             }
         }
@@ -3656,12 +3674,12 @@ namespace battleutils
         if (PItemHands && PItemHands->getID() == 14900)
             shotCount++;
 
-        if (lvl < 30)   return 0;
-        else if (lvl < 50)  shotCount += 3;
-        else if (lvl < 75)  shotCount += 4;
-        else if (lvl < 90)  shotCount += 5;
-        else if (lvl < 99)  shotCount += 6;
-        else if (lvl >= 99) shotCount += 7;
+        if (0 < lvl < 30)   return 0;
+        else if (lvl < 50)   shotCount += 4; // 4 shots at lv30
+        else if (lvl < 75)   shotCount += 5; // 5 shots at lv50
+        else if (lvl < 90)   shotCount += 6; // 6 shots at lv75
+        else if (lvl >= 90)  shotCount += 7; // 7 shots at lv90 (bg-wiki)
+        shotCount += PChar->getMod(Mod::BARRAGE_BONUS); // JP Gift shot bonus + Gear Bonus
 
 
         // make sure we have enough ammo for all these shots
@@ -4289,7 +4307,9 @@ namespace battleutils
         if (PAttacker->objtype == TYPE_MOB &&
              PDefender->StatusEffectContainer->HasStatusEffect(EFFECT_ISSEKIGAN)) {
             // Issekigan is Known to Grant 300 CE per parry, but unknown how it effects VE (per bgwiki). So VE is left alone for now.
-            static_cast<CMobEntity*>(PAttacker)->PEnmityContainer->UpdateEnmity(PDefender, 300, 0, false);
+            // JP is known to give 10 VE per point
+            uint16 jp_bonus = ((CCharEntity*)PDefender)->PJobPoints->GetJobPointValue(JP_ISSEKIGAN_EFFECT) * 10;
+            static_cast<CMobEntity*>(PAttacker)->PEnmityContainer->UpdateEnmity(PDefender, 300, 0 + jp_bonus, false);
         }
     }
 
@@ -5063,6 +5083,11 @@ namespace battleutils
                 {
                     bonus = PEntity->getMod(Mod::ALACRITY_CELERITY_EFFECT);
                 }
+                //Apply JP Bonus
+                if (PEntity->objtype == TYPE_PC) 
+                {
+                    bonus += ((CCharEntity*)PEntity)->PJobPoints->GetJobPointValue(JP_STRATEGEM_EFFECT_II);
+                }
                 cast -= (uint32)(base * ((100 - (50 + bonus)) / 100.0f));
                 applyArts = false;
             }
@@ -5088,6 +5113,11 @@ namespace battleutils
                 if (battleutils::WeatherMatchesElement(battleutils::GetWeather(PEntity, false), (uint8)PSpell->getElement()))
                 {
                     bonus = PEntity->getMod(Mod::ALACRITY_CELERITY_EFFECT);
+                }
+                // Apply JP Bonus
+                if (PEntity->objtype == TYPE_PC) 
+                {
+                    bonus += ((CCharEntity*)PEntity)->PJobPoints->GetJobPointValue(JP_STRATEGEM_EFFECT_II);
                 }
                 cast -= (uint32)(base * ((100 - (50 + bonus)) / 100.0f));
                 applyArts = false;
@@ -5129,6 +5159,13 @@ namespace battleutils
             }
             uint16 songcasting = PEntity->getMod(Mod::SONG_SPELLCASTING_TIME);
             cast = (uint32)(cast * (1.0f - ((songcasting > 50 ? 50 : songcasting) / 100.0f)));
+        }
+        else if(PSpell->getSpellGroup() == SPELLGROUP_NINJUTSU) 
+        {
+            if(PEntity->objtype == TYPE_PC) {
+                uint8 jp_value = ((CCharEntity*)PEntity)->PJobPoints->GetJobPointValue(JP_NINJITSU_CAST_TIME_BONUS);
+                cast = (uint32)(cast * (1.0f - (0.03f * jp_value)));
+            }
         }
 
         int16 fastCast = std::clamp<int16>(PEntity->getMod(Mod::FASTCAST), -100, 50);
@@ -5298,7 +5335,11 @@ namespace battleutils
                 {
                     bonus = PEntity->getMod(Mod::ALACRITY_CELERITY_EFFECT);
                 }
-                recast = (int32)(recast * ((50 - bonus) / 100.0f));
+                if (PEntity->objtype == TYPE_PC) {
+                    bonus +=  2 * ((CCharEntity*)PEntity)->PJobPoints->GetJobPointValue(JP_STRATEGEM_EFFECT_IV);
+                }
+                bonus = std::clamp(50 - bonus, 0, 50);
+                recast = (int32)(recast * (bonus / 100.0f));
 
                 applyArts = false;
             }
@@ -5337,7 +5378,11 @@ namespace battleutils
                 {
                     bonus = PEntity->getMod(Mod::ALACRITY_CELERITY_EFFECT);
                 }
-                recast = (int32)(recast * ((50 - bonus) / 100.0f));
+                if (PEntity->objtype == TYPE_PC) {
+                    bonus +=  2 * ((CCharEntity*)PEntity)->PJobPoints->GetJobPointValue(JP_STRATEGEM_EFFECT_IV);
+                }
+                bonus = std::clamp(50 - bonus, 0, 50);
+                recast = (int32)(recast * (bonus / 100.0f));
 
                 applyArts = false;
             }

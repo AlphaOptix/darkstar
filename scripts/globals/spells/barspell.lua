@@ -7,6 +7,7 @@ require("scripts/globals/status")
 function calculateBarspellPower(caster,enhanceSkill)
     local meritBonus = caster:getMerit(dsp.merit.BAR_SPELL_EFFECT)
     local equipBonus = caster:getMod(dsp.mod.BARSPELL_AMOUNT)
+    local jp_value    = caster:getJobPointValue(dsp.jp.BAR_SPELL_EFFECT) * 2
 
     if (enhanceSkill == nil or enhanceSkill < 0) then
         enhanceSkill = 0
@@ -20,7 +21,7 @@ function calculateBarspellPower(caster,enhanceSkill)
     else
         power = 40 + math.floor(enhanceSkill * 0.2)
     end
-    return power + meritBonus + equipBonus
+    return power + meritBonus + equipBonus + jp_value
 end
 
 function calculateBarspellDuration(caster,enhanceSkill)

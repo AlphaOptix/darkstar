@@ -28,5 +28,12 @@ function applyRoll(caster,target,ability,action,total)
     caster:doWildCard(target,total)
     ability:setMsg(435 + math.floor((total-1)/2)*2)
     action:animation(target:getID(), 132 + (total) - 1)
+    if (caster:getID() == target:getID()) then
+        local jp_value = caster:getJobPointValue(dsp.jp.WILD_CARD_EFFECT)
+        -- JP 1% chance per point to reset Wild Card
+        if(math.random(1,100) <= jp_value) then
+            ability:setRecast(0)
+        end
+    end
     return total
 end

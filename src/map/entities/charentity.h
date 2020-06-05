@@ -45,7 +45,7 @@ class CTrustEntity;
 
 struct jobs_t
 {
-    uint32 unlocked;				// a bit field of the jobs unlocked. The bit indices are stored inside of of the JOBTYPE enumeration 
+    uint32 unlocked;				// a bit field of the jobs unlocked. The bit indices are stored inside of of the JOBTYPE enumeration
     uint8  job[MAX_JOBTYPE];		// the current levels of each of the jobs from above
     uint16 exp[MAX_JOBTYPE];		// the experience points for each of the jobs above
     uint8  genkai;					// the maximum genkai level achieved
@@ -152,6 +152,7 @@ struct GearSetMod_t
 class CBasicPacket;
 class CLinkshell;
 class CMeritPoints;
+class CJobPoints;
 class CCharRecastContainer;
 class CLatentEffectContainer;
 class CTradeContainer;
@@ -246,6 +247,7 @@ public:
     CLinkshell*       PLinkshell2;                  // linkshell 2
     CTreasurePool*	  PTreasurePool;                // сокровища, добытые с монстров
     CMeritPoints*     PMeritPoints;                 //
+    CJobPoints*       PJobPoints;                   //
     bool			  MeritMode;					//If true then player is meriting
 
     CLatentEffectContainer* PLatentEffectContainer;
@@ -292,6 +294,8 @@ public:
 
     uint8			  m_GMlevel;                    // Level of the GM flag assigned to this character
     bool              m_isGMHidden;                 // GM Hidden flag to prevent player updates from being processed.
+
+    bool              m_jobmasterdisp;
 
     bool              m_mentorUnlocked;
     uint32            m_moghouseID;

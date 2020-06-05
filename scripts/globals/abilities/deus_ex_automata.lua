@@ -17,6 +17,8 @@ function onAbilityCheck(player,target,ability)
     elseif not player:canUseMisc(dsp.zoneMisc.PET) then
         return dsp.msg.basic.CANT_BE_USED_IN_AREA, 0
     else
+        local jp_value = player:getJobPointValue(dsp.jp.DEUS_EX_AUTOMATA_RECAST)
+        ability:setRecast(ability:getRecast() - jp_value)
         return 0, 0
     end
 end

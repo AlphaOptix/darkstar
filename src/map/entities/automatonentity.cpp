@@ -34,6 +34,7 @@
 #include "../ai/states/mobskill_state.h"
 #include "../packets/action.h"
 #include "../mob_modifier.h"
+#include "../job_points.h"
 #include "../utils/mobutils.h"
 #include "../recast_container.h"
 
@@ -122,6 +123,10 @@ void CAutomatonEntity::burdenTick()
 void CAutomatonEntity::setInitialBurden()
 {
     m_Burden.fill(30);
+}
+
+void CAutomatonEntity::setBurden(uint8 burden) {
+    m_Burden.fill(burden);
 }
 
 uint8 CAutomatonEntity::addBurden(uint8 element, int8 burden)

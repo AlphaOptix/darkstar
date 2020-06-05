@@ -23,4 +23,10 @@ end
 
 function onUseAbility(player,target,ability)
     player:spawnPet(dsp.pet.id.AUTOMATON)
+    local pet = player:getPet()
+    if pet then
+        local jp_value = player:getJobPointValue(dsp.jp.ACTIVATE_EFFECT)
+        pet:addMod(dsp.mod.HP, jp_value * 10)
+        pet:addMod(dsp.mod.MP, jp_value * 11)
+    end
 end

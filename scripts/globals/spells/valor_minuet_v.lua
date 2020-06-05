@@ -13,6 +13,7 @@ end
 function onSpellCast(caster,target,spell)
     local sLvl = caster:getSkillLevel(dsp.skill.SINGING) -- Gets skill level of Singing
     local iLvl = caster:getWeaponSkillLevel(dsp.slot.RANGED)
+    local jp_value = caster:getJobPointValue(dsp.jp.MINUET_EFFECT)
 
     local power = 32
 
@@ -30,6 +31,7 @@ function onSpellCast(caster,target,spell)
     end
 
     power =  power + caster:getMerit(dsp.merit.MINUET_EFFECT)
+    power =  power + jp_value
 
     if (caster:hasStatusEffect(dsp.effect.SOUL_VOICE)) then
         power = power * 2

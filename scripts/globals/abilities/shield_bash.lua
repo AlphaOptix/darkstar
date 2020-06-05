@@ -21,6 +21,7 @@ end
 function onUseAbility(player, target, ability)
 
     local shieldSize = player:getShieldSize()
+    local jp_value = target:getJobPointValue(dsp.jp.SHIELD_BASH_EFFECT)
     local damage = 0
     local chance = 90
     damage = player:getMod(dsp.mod.SHIELD_BASH)
@@ -42,6 +43,9 @@ function onUseAbility(player, target, ability)
     else
         damage = math.floor(damage)
     end
+
+    -- JP Modifier +10 per JP
+    damage = damage + jp_value * 10
 
     -- Calculate stun proc chance
     chance = chance + (player:getMainLvl() - target:getMainLvl()) * 5

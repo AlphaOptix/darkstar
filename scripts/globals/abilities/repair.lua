@@ -32,6 +32,7 @@ function onUseAbility(player,target,ability)
     local totalHealing = 0
     local regenAmount = 0
     local regenTime = 0
+    local refreshAmount = 0
     local pet = player:getPet()
     local petCurrentHP = pet:getHP()
     local petMaxHP = pet:getMaxHP()
@@ -45,21 +46,25 @@ function onUseAbility(player,target,ability)
             regenAmount = 10
             totalHealing = petMaxHP * 0.1
             regenTime = 30
+            refreshAmount = 5
             end,
         [18732] = function (x) -- Automaton Oil + 1
             regenAmount = 20
             totalHealing = petMaxHP * 0.2
             regenTime = 60
+            refreshAmount = 10
             end,
         [18733] = function (x) -- Automaton Oil + 2
             regenAmount = 30
             totalHealing = petMaxHP * 0.3
             regenTime = 90
+            refreshAmount = 15
             end,
         [19185] = function (x) -- Automaton Oil + 3
             regenAmount = 40
             totalHealing = petMaxHP * 0.4
             regenTime = 120
+            refreshAmount = 20
             end,
     }
 
@@ -104,13 +109,18 @@ function onUseAbility(player,target,ability)
         totalHealing = diff
     end
 
+    -- JP recovers MP
+    local jp_value = player:getJobPointValue(REPAIR_EFFECT)
+
     pet:addHP(totalHealing)
     pet:wakeUp()
 
     -- Apply regen dsp.effect.
 
     pet:delStatusEffect(dsp.effect.REGEN)
+    pet:delStatusEffect(dsp.effect.REFRESH)
     pet:addStatusEffect(dsp.effect.REGEN,regenAmount,3,regenTime) -- 3 = tick, each 3 seconds.
+    if jp_value then pet:addStatusEffect(dsp.effect.REFRESH,refreshAmount * jp_value,3,regenTime) end -- needs verification
     player:removeAmmo()
 
     return totalHealing

@@ -26,21 +26,35 @@
 #include "menu_jp.h"
 
 #include "../entities/charentity.h"
+#include "../entities/battleentity.h"
 #include "../utils/charutils.h"
-
+#include "../job_points.h"
 
 CMenuJobPointsPacket::CMenuJobPointsPacket(CCharEntity* PChar) 
 {
+
+  #define PACKET_DATA_OFFSET 0x0C
+  #define PACKET_DATA_SIZE 0x06 //Size in number of uint8
+
 	this->type = 0x63;
 	this->size = 0x9c;
+
+  JobPoints_t * job_points = PChar->PJobPoints->GetAllJobPoints();
 	
-	ref<uint8>(0x04) = 0x05;
+	ref<uint8>(0x04) = 0x05; //JP Data Type
 	ref<uint8>(0x06) = 0x98;
 
-    ref<uint8>(0x08) = 0x1; // 0x0 for no access, 0x1 for access
-    ref<uint8>(0x0A) = 0x0;
+  ref<uint8>(0x08) = 0x1; // 0x0 for no access, 0x1 for access
+  ref<uint8>(0x0A) = 0x0;
 
-	//TODO: Add Job iteration unit8 CP, uint8 JP, uint8 SPENT, 0X0c is always 0'd
+  // Start at 1 since first job will always be 0
+  for (uint8 i=1; i < MAX_JOBTYPE; i++) {
+    JobPoints_t * current_job = &job_points[i];
+    uint16 offset = PACKET_DATA_OFFSET + (PACKET_DATA_SIZE * i);
+    ref<uint16>(offset) = current_job->capacity_points;
+    ref<uint16>(offset + 2) = current_job->job_points;
+    ref<uint16>(offset + 4) = current_job->job_points_spent;
+  }
 }
 
 

@@ -7,12 +7,16 @@ require("scripts/globals/status")
 -----------------------------------
 
 function onEffectGain(target,effect)
-    target:addMod(dsp.mod.ACC,15)
+    local jp_value = target:getJobPointValue(dsp.jp.COMPOSURE_EFFECT);
+    print(jp_value);
+    target:addMod(dsp.mod.ACC,15 + jp_value)
 end
 
 function onEffectTick(target,effect)
 end
 
 function onEffectLose(target,effect)
-    target:delMod(dsp.mod.ACC,15)
+    local jp_value = target:getJobPointValue(dsp.jp.COMPOSURE_EFFECT);
+    print(jp_value);
+    target:delMod(dsp.mod.ACC,15 + jp_value)
 end

@@ -38,10 +38,12 @@
 #include "blueutils.h"
 #include "../party.h"
 #include "../merit.h"
+#include "../job_points.h"
 #include "../modifier.h"
 #include "../spell.h"
 #include "../blue_spell.h"
 #include "../blue_trait.h"
+#include "../job_points.h"
 
 namespace blueutils
 {
@@ -293,10 +295,14 @@ uint8 GetTotalBlueMagicPoints(CCharEntity* PChar)
         return 0;
     else
     {
-        uint8 points = ((level - 1)/10)*5 + 10;
+        uint8 points = std::clamp(((level - 1)/10)*5 + 10, 0, 55);
         if (level >= 75)
         {
             points = points + PChar->PMeritPoints->GetMeritValue(MERIT_ASSIMILATION, PChar);
+        }
+        if (level >= 99)
+        {
+            points = points + PChar->PJobPoints->GetJobPointValue(JP_BLUE_MAGIC_POINT_BONUS);
         }
         return points;
     }

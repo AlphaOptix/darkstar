@@ -64,7 +64,7 @@ function onUseAbility(player,target,ability)
         weatherDayBonus = weatherDayBonus - 0.25
     end
 
-    local power = math.floor(basePower * weatherDayBonus)
+    local power = math.floor(basePower * weatherDayBonus) + (player:getJobPointValue(dsp.jp.ELEMENTAL_SIPHON_EFFECT) * 3)
     local spirit = player:getPet()
     power = utils.clamp(power, 0, spirit:getMP()) -- cap MP drained at spirit's MP
     power = utils.clamp(power, 0, player:getMaxMP() - player:getMP()) -- cap MP drained at the max MP - current MP

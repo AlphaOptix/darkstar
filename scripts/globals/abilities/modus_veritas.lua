@@ -29,7 +29,7 @@ function onUseAbility(player, target, ability)
             local mvMerits = player:getMerit(dsp.merit.MODUS_VERITAS_DURATION)
             local durationMultiplier = 0.5 + (0.05 * mvMerits)
             mvPower = mvPower + 1
-            local helixPower = helix:getPower() * 2
+            local helixPower = helix:getPower() * 2 + player:getJobPointValue(dsp.jp.MODUS_VERITAS_EFFECT)
             local duration = helix:getDuration()
             local remaining = math.floor(helix:getTimeRemaining() / 1000) -- from milliseconds
             -- print(string.format("helix original dot stats: %i, duration: %i, remaining: %i", helixPower / 2, duration, remaining))

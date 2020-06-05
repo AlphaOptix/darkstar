@@ -45,6 +45,7 @@ This file is part of DarkStar-server source code.
 #include "../enmity_container.h"
 #include "../items/item_weapon.h"
 #include "../zone_instance.h"
+#include "../job_points.h"
 
 #include "../ai/ai_container.h"
 #include "../ai/controllers/mob_controller.h"
@@ -634,6 +635,19 @@ namespace petutils
             PPet->setModifier(Mod::DEF, battleutils::GetMaxSkill(12, PPet->GetMLevel()));
             break;
         }
+
+        // Add Job Point Stat Bonuses
+        if (PMaster->GetMJob() == JOB_PUP) 
+        {
+            PPet->addModifier(Mod::ATT, PMaster->getMod(Mod::PET_ATK_DEF));
+            PPet->addModifier(Mod::DEF, PMaster->getMod(Mod::PET_ATK_DEF));
+            PPet->addModifier(Mod::ACC, PMaster->getMod(Mod::PET_ACC_EVA));
+            PPet->addModifier(Mod::EVA, PMaster->getMod(Mod::PET_ACC_EVA));
+            PPet->addModifier(Mod::MATT, PMaster->getMod(Mod::PET_MAB_MDB));
+            PPet->addModifier(Mod::MDEF, PMaster->getMod(Mod::PET_MAB_MDB));
+            PPet->addModifier(Mod::MACC, PMaster->getMod(Mod::PET_MACC_MEVA));
+            PPet->addModifier(Mod::MEVA, PMaster->getMod(Mod::PET_MACC_MEVA));
+        }
     }
 
     void LoadTrustStats(CTrustEntity* PTrust)
@@ -820,7 +834,7 @@ namespace petutils
         }
     }
 
-    void LoadAvatarStats(CPetEntity* PPet)
+    void LoadAvatarStats(CBattleEntity* PMaster, CPetEntity* PPet)
     {
         // Объявление переменных, нужных для рассчета.
         float raceStat = 0;			// конечное число HP для уровня на основе расы.
@@ -958,6 +972,18 @@ namespace petutils
             // Вывод значения
             ref<uint16>(&PPet->stats, counter) = (uint16)(raceStat + jobStat);
             counter += 2;
+        }
+
+        if (PMaster->GetMJob() == JOB_SMN) 
+        {
+            PPet->addModifier(Mod::ATT, PMaster->getMod(Mod::PET_ATK_DEF));
+            PPet->addModifier(Mod::DEF, PMaster->getMod(Mod::PET_ATK_DEF));
+            PPet->addModifier(Mod::ACC, PMaster->getMod(Mod::PET_ACC_EVA));
+            PPet->addModifier(Mod::EVA, PMaster->getMod(Mod::PET_ACC_EVA));
+            PPet->addModifier(Mod::MATT, PMaster->getMod(Mod::PET_MAB_MDB));
+            PPet->addModifier(Mod::MDEF, PMaster->getMod(Mod::PET_MAB_MDB));
+            PPet->addModifier(Mod::MACC, PMaster->getMod(Mod::PET_MACC_MEVA));
+            PPet->addModifier(Mod::MEVA, PMaster->getMod(Mod::PET_MACC_MEVA));
         }
     }
 
@@ -1566,7 +1592,7 @@ namespace petutils
                 ShowDebug("%s summoned an avatar but is not SMN main or SMN sub! Please report. \n", PMaster->GetName());
                 PPet->SetMLevel(1);
             }
-            LoadAvatarStats(PPet); //follows PC calcs (w/o SJ)
+            LoadAvatarStats(PMaster, PPet); //follows PC calcs (w/o SJ)
 
             PPet->m_SpellListContainer = mobSpellList::GetMobSpellList(PPetData->spellList);
 
@@ -1636,6 +1662,13 @@ namespace petutils
                 PPet->addModifier(Mod::ATT, PChar->PMeritPoints->GetMeritValue(MERIT_AVATAR_PHYSICAL_ATTACK, PChar));
                 PPet->addModifier(Mod::MACC, PChar->PMeritPoints->GetMeritValue(MERIT_AVATAR_MAGICAL_ACCURACY, PChar));
                 PPet->addModifier(Mod::ACC, PChar->PMeritPoints->GetMeritValue(MERIT_AVATAR_PHYSICAL_ACCURACY, PChar));
+                if (PMaster->GetMLevel() >= 99 && PMaster->GetMJob() == JOB_SMN) {
+                    PPet->addModifier(Mod::ACC, PChar->PJobPoints->GetJobPointValue(JP_SUMMON_ACC_BONUS));
+                    PPet->addModifier(Mod::MACC, PChar->PJobPoints->GetJobPointValue(JP_SUMMON_MAGIC_ACC_BONUS));
+                    PPet->addModifier(Mod::ATT, PChar->PJobPoints->GetJobPointValue(JP_SUMMON_PHYS_ATK_BONUS) * 2);
+                    PPet->addModifier(Mod::MAGIC_DAMAGE, PChar->PJobPoints->GetJobPointValue(JP_SUMMON_MAGIC_DMG_BONUS) * 5);
+                    PPet->addModifier(Mod::BP_DAMAGE, PChar->PJobPoints->GetJobPointValue(JP_BLOOD_PACT_DMG_BONUS) * 3);
+                }
             }
 
             PMaster->addModifier(Mod::AVATAR_PERPETUATION, PerpetuationCost(PetID, PPet->GetMLevel()));
@@ -1778,7 +1811,7 @@ namespace petutils
         PPet->SetMJob(JOB_DRG);
         PPet->SetMLevel(PMaster->GetMLevel());
 
-        LoadAvatarStats(PPet); //follows PC calcs (w/o SJ)
+        LoadAvatarStats(PMaster, PPet); //follows PC calcs (w/o SJ)
         ((CItemWeapon*)PPet->m_Weapons[SLOT_MAIN])->setDelay((uint16)(floor(1000.0f * (320.0f / 60.0f)))); //320 delay
         ((CItemWeapon*)PPet->m_Weapons[SLOT_MAIN])->setDamage((uint16)(1 + floor(PPet->GetMLevel() * 0.9f)));
         //Set A+ weapon skill
@@ -1787,6 +1820,21 @@ namespace petutils
         //Set D evasion and def
         PPet->setModifier(Mod::EVA, battleutils::GetMaxSkill(SKILL_HAND_TO_HAND, JOB_WAR, PPet->GetMLevel()));
         PPet->setModifier(Mod::DEF, battleutils::GetMaxSkill(SKILL_HAND_TO_HAND, JOB_WAR, PPet->GetMLevel()));
+        //JP Max HP
+        if (PMaster->objtype == TYPE_PC) {
+            uint8 jp_value = ((CCharEntity*)PMaster)->PJobPoints->GetJobPointValue(JP_WYVERN_MAX_HP_BONUS);
+            if (jp_value > 0) {
+                PPet->addModifier(Mod::HP, jp_value * 10);
+            }
+
+            if (PMaster->GetMJob() == JOB_DRG) 
+            {
+                PPet->addModifier(Mod::ACC, PMaster->getMod(Mod::PET_ACC_EVA));
+                PPet->addModifier(Mod::EVA, PMaster->getMod(Mod::PET_ACC_EVA));
+                PPet->addModifier(Mod::MACC, PMaster->getMod(Mod::PET_MACC_MEVA));
+                PPet->addModifier(Mod::MEVA, PMaster->getMod(Mod::PET_MACC_MEVA));
+            }
+        }
 
         if (finalize)
             FinalizePetStatistics(PMaster, PPet);

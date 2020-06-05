@@ -30,6 +30,7 @@
 #include "../entities/charentity.h"
 #include "../utils/itemutils.h"
 #include "../status_effect_container.h"
+#include "../modifier.h"
 
 CCharPacket::CCharPacket(CCharEntity * PChar, ENTITYUPDATE type, uint8 updatemask)
 {
@@ -120,6 +121,12 @@ CCharPacket::CCharPacket(CCharEntity * PChar, ENTITYUPDATE type, uint8 updatemas
             }
 
             ref<uint16>(0x30) = PChar->m_Costume;
+
+            if (PChar->getMod(Mod::SUPERIOR_LEVEL) == 5 && PChar->m_jobmasterdisp)
+            {
+                ref<uint8>(0x42) = 0x80;
+            }
+
             ref<uint8>(0x43) = 0x04;
 
             if (updatemask & UPDATE_LOOK)

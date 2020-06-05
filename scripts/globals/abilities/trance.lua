@@ -16,4 +16,5 @@ end
 
 function onUseAbility(player,target,ability)
     player:addStatusEffect(dsp.effect.TRANCE,1,0,60)
+    player:addTP(100 * player:getJobPointValue(dsp.jp.TRANCE_EFFECT))
 end

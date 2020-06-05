@@ -138,6 +138,7 @@ struct map_config_t
     bool   skillup_bloodpact;         // Enable/disable skillups for bloodpacts
     bool   anticheat_enabled;         // Is the anti-cheating system enabled
     bool   anticheat_jail_disable;    // Globally disable auto-jailing by the anti-cheat system
+    uint8  max_blu_points;            // Total number of additional BLU points attainable
 };
 
 /************************************************************************

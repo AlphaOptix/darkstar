@@ -49,7 +49,7 @@ function onUseAbility(caster,target,ability,action)
 end
 
 function applyRoll(caster,target,ability,action,total)
-    local duration = 300 + caster:getMerit(dsp.merit.WINNING_STREAK) + caster:getMod(dsp.mod.PHANTOM_DURATION)
+    local duration = 300 + caster:getMerit(dsp.merit.WINNING_STREAK) + caster:getMod(dsp.mod.PHANTOM_DURATION) + (caster:getJobPointValue(dsp.jpPHANTOM_ROLL_DURATION) * 2)
     local effectpowers = {2, 3, 4, 11, 5, 6, 7, 8, 1, 10, 12, -5}
     local effectpower = effectpowers[total]
 -- Apply Buffs from Blitzer's Roll Enhancing Gear if present

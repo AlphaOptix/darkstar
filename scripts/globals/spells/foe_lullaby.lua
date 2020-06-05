@@ -34,6 +34,8 @@ function onSpellCast(caster,target,spell)
             duration = duration * 2
         end
 
+        duration = duration + caster:getJobPointValue(dsp.jp.LULLABY_DURATION)
+
         if target:addStatusEffect(dsp.effect.LULLABY, 1, 0, duration) then
             spell:setMsg(dsp.msg.basic.MAGIC_ENFEEB)
         else

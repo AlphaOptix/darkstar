@@ -7,8 +7,9 @@ require("scripts/globals/status")
 -----------------------------------
 
 function onEffectGain(target,effect)
+    local jp_value = target:getJobPointValue(dsp.jp.SENTINEL_EFFECT)
     target:addMod(dsp.mod.UDMGPHYS,-effect:getPower())
-    target:addMod(dsp.mod.ENMITY, 100)
+    target:addMod(dsp.mod.ENMITY, 100 + jp_value)
     target:addMod(dsp.mod.ENMITY_LOSS_REDUCTION, effect:getSubPower())
 end
 
@@ -30,7 +31,8 @@ function onEffectTick(target,effect)
 end
 
 function onEffectLose(target,effect)
+   local jp_value = target:getJobPointValue(dsp.jp.SENTINEL_EFFECT)
     target:delMod(dsp.mod.UDMGPHYS,-effect:getPower())
-    target:delMod(dsp.mod.ENMITY, 100)
+    target:delMod(dsp.mod.ENMITY, 100 + jp_value)
     target:delMod(dsp.mod.ENMITY_LOSS_REDUCTION, effect:getSubPower())
 end

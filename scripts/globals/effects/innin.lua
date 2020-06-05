@@ -9,6 +9,9 @@ require("scripts/globals/status")
 function onEffectGain(target,effect) --power=30 initially, subpower=20 for enmity
     target:addMod(dsp.mod.EVA,-effect:getPower())
     target:addMod(dsp.mod.ENMITY,-effect:getSubPower())
+
+    local jp_value = target:getJobPointValue(dsp.jp.INNIN_EFFECT)
+    target:addMod(dsp.mod.ACC, jp_value)
 end
 
 function onEffectTick(target,effect)
@@ -25,4 +28,7 @@ function onEffectLose(target,effect)
     --remove the remaining power
     target:delMod(dsp.mod.EVA,-effect:getPower())
     target:delMod(dsp.mod.ENMITY,-effect:getSubPower())
+
+    local jp_value = target:getJobPointValue(dsp.jp.INNIN_EFFECT)
+    target:delMod(dsp.mod.ACC, jp_value)
 end

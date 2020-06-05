@@ -41,29 +41,35 @@ function onUseAbility(player,target,ability)
 
     local playerHP = player:getHP()
     local drainamount = (math.random(25,35) / 100) * playerHP
+    local jp_value = player:getJobPointValue(dsp.jp.SPIRIT_LINK_EFFECT)
+
+    -- Reduces drain effect on player by 1% Per JP
+    local player_drainamount = drainamount * (1 - (0.01 * jp_value))
+
     if (player:getPet():getHP() == player:getPet():getMaxHP()) then
         drainamount = 0 -- Prevents player HP lose if wyvern is at full HP
+        player_drainamount = 0
     end
 
     if (player:hasStatusEffect(dsp.effect.STONESKIN)) then
         local skin = player:getMod(dsp.mod.STONESKIN)
 
-        if (skin >= drainamount) then
-            if (skin == drainamount) then
+        if (skin >= player_drainamount) then
+            if (skin == player_drainamount) then
                 player:delStatusEffect(dsp.effect.STONESKIN)
             else
                 local effect = player:getStatusEffect(dsp.effect.STONESKIN)
-                effect:setPower(effect:getPower() - drainamount) -- fixes the status effeect so when it ends it uses the new power instead of old
-                player:delMod(dsp.mod.STONESKIN,drainamount) --removes the amount from the mod
+                effect:setPower(effect:getPower() - player_drainamount) -- fixes the status effeect so when it ends it uses the new power instead of old
+                player:delMod(dsp.mod.STONESKIN,player_drainamount) --removes the amount from the mod
 
             end
         else
             player:delStatusEffect(dsp.effect.STONESKIN)
-            player:takeDamage(drainamount - skin)
+            player:takeDamage(player_drainamount - skin)
         end
 
     else
-        player:takeDamage(drainamount)
+        player:takeDamage(player_drainamount)
     end
 
     local pet = player:getPet()

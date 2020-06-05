@@ -362,6 +362,12 @@
     <ClInclude Include="..\..\src\map\packets\inventory_size.h">
       <Filter>Header Files\packets</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\map\packets\job_point_details.h">
+      <Filter>Header Files\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\map\packets\job_point_update.h">
+      <Filter>Header Files\packets</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\map\packets\key_items.h">
       <Filter>Header Files\packets</Filter>
     </ClInclude>
@@ -561,6 +567,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\map\merit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\map\job_points.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\map\latent_effect.h">
@@ -1132,6 +1141,12 @@
     <ClCompile Include="..\..\src\map\packets\inventory_size.cpp">
       <Filter>Source Files\packets</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\map\packets\job_point_details.cpp">
+      <Filter>Source Files\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\map\packets\job_point_update.cpp">
+      <Filter>Source Files\packets</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\map\packets\key_items.cpp">
       <Filter>Source Files\packets</Filter>
     </ClCompile>
@@ -1327,6 +1342,9 @@
     <ClCompile Include="..\..\src\map\recast_container.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\map\job_points.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>    
     <ClCompile Include="..\..\src\map\merit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

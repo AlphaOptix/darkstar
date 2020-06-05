@@ -7,6 +7,8 @@ require("scripts/globals/status")
 -----------------------------------
 
 function onEffectGain(target, effect)
+    local jp_value = target:getJobPointValue(dsp.jp.LAST_RESORT_EFFECT)
+    target:addMod(dsp.mod.ATT, 2 * jp_value)
     target:addMod(dsp.mod.ATTP, 25 + target:getMerit(dsp.merit.LAST_RESORT_EFFECT))
     target:addMod(dsp.mod.HASTE_ABILITY, target:getMod(dsp.mod.DESPERATE_BLOWS) + target:getMerit(dsp.merit.DESPERATE_BLOWS))
 
@@ -18,6 +20,8 @@ function onEffectTick(target, effect)
 end
 
 function onEffectLose(target, effect)
+    local jp_value = target:getJobPointValue(dsp.jp.LAST_RESORT_EFFECT)
+    target:delMod(dsp.mod.ATT, 2 * jp_value)
     target:delMod(dsp.mod.ATTP, 25 + target:getMerit(dsp.merit.LAST_RESORT_EFFECT))
     target:delMod(dsp.mod.HASTE_ABILITY, target:getMod(dsp.mod.DESPERATE_BLOWS) + target:getMerit(dsp.merit.DESPERATE_BLOWS))
      -- Gear that affects this mod is handled by a Latent Effect because the gear must remain equipped

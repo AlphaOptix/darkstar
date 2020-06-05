@@ -38,6 +38,8 @@ function onSpellCast(caster,target,spell)
     local iBoost = caster:getMod(dsp.mod.REQUIEM_EFFECT) + caster:getMod(dsp.mod.ALL_SONGS_EFFECT)
     power = power + iBoost
 
+    power = power + (caster:getJobPointValue(dsp.jp.REQUIEM_EFFECT) * 3) -- JP Bonus
+
     if (caster:hasStatusEffect(dsp.effect.SOUL_VOICE)) then
         power = power * 2
     elseif (caster:hasStatusEffect(dsp.effect.MARCATO)) then

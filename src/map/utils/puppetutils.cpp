@@ -28,6 +28,7 @@
 #include "charutils.h"
 #include "itemutils.h"
 #include "zoneutils.h"
+#include "../job_points.h"
 #include "../status_effect_container.h"
 #include "../entities/automatonentity.h"
 #include "../packets/char_job_extra.h"
@@ -84,10 +85,13 @@ void LoadAutomaton(CCharEntity* PChar)
                 tempEquip.Frame = FRAME_HARLEQUIN;
                 for (int i = 0; i < 12; i++)
                     tempEquip.Attachments[i] = 0;
+
+                int16 elemCapacityBonus = 0 + PChar->getMod(Mod::AUTO_ELEM_CAPACITY);
+
                 for (int i = 0; i < 6; i++)
-                    PChar->PAutomaton->setElementMax(i, 5);
-                PChar->PAutomaton->setElementMax(6, 3);
-                PChar->PAutomaton->setElementMax(7, 3);
+                    PChar->PAutomaton->setElementMax(i, 5 + elemCapacityBonus);
+                PChar->PAutomaton->setElementMax(6, 3 + elemCapacityBonus);
+                PChar->PAutomaton->setElementMax(7, 3 + elemCapacityBonus);
                 for (int i = 0; i < 8; i++)
                     PChar->PAutomaton->m_ElementEquip[i] = 0;
             }
@@ -104,6 +108,9 @@ void LoadAutomaton(CCharEntity* PChar)
             for (int i = 0; i < 12; i++)
                 if (tempEquip.Attachments[i] != 198 && tempEquip.Attachments[i] != 206)
                     setAttachment(PChar, i, tempEquip.Attachments[i]);
+
+            // Set burden based on JP
+            PChar->PAutomaton->setBurden(30 - PChar->PJobPoints->GetJobPointValue(JP_ACTIVATE_EFFECT));
 
             PChar->PAutomaton->UpdateHealth();
             PChar->PAutomaton->health.hp = PChar->PAutomaton->GetMaxHP();

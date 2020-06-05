@@ -152,6 +152,7 @@ enum class Mod
     EVASION                   = 108, // Evasion Skill
     SHIELD                    = 109, // Shield Skill
     PARRY                     = 110, // Parry Skill
+    HANDBELL                  = 990, // Handbell Skill
 
     // Magic Skills
     DIVINE                    = 111, // Divine Magic Skill
@@ -166,6 +167,7 @@ enum class Mod
     STRING                    = 120, // String Magic Skill
     WIND                      = 121, // Wind Magic Skill
     BLUE                      = 122, // Blue Magic Skill
+    GEOMANCY                  = 988, // Geomancy Skill
 
     // Synthesis Skills
     FISH                      = 127, // Fishing Skill
@@ -222,7 +224,7 @@ enum class Mod
     HASTE_GEAR                = 384, // Haste (and Slow) from equipment - 10000 base, 375 = 3.75%
     SPELLINTERRUPT            = 168, // % Spell Interruption Rate
     MOVE                      = 169, // % Movement Speed
-    FASTCAST                  = 170, // Increases Spell Cast Time (TRAIT)
+    FASTCAST                  = 170, // Reduces cast time by n% and recast time by 0.5n%
     UFASTCAST                 = 407, // uncapped fast cast
     CURE_CAST_TIME            = 519, // cure cast time reduction
     ELEMENTAL_CELERITY        = 901, // Quickens Elemental Magic Casting
@@ -312,6 +314,9 @@ enum class Mod
     COUNTERSTANCE_EFFECT      = 543, // Counterstance effect in percents
     DODGE_EFFECT              = 552, // Dodge effect in percents
     FOCUS_EFFECT              = 561, // Focus effect in percents
+    COUNTER_DAMAGE_PERCENT    = 959, // Increases damage from counterattacks by a percentage
+    COUNTER_DAMAGE            = 993, // Increases damage from coutnerattacks
+    COUNTER_BASE_WPN_DMG      = 994, // Increases Counter base weapon damage
 
     // White Mage
     AFFLATUS_SOLACE           = 293, // Pool of HP accumulated during Afflatus Solace
@@ -321,6 +326,7 @@ enum class Mod
     REGEN_MULTIPLIER          = 838, // Multiplier to base regen rate
     CURE2MP_PERCENT           = 860, // Converts % of "Cure" amount to MP
     DIVINE_BENISON            = 910, // Adds fast cast and enmity reduction to -Na spells (includes Erase). Enmity reduction is half of the fast cast amount
+    REGEN_BONUS               = 960, // Increases the amount of HP restored by Regen
 
     // Black Mage
     CLEAR_MIND                = 295, // Used in conjunction with HEALMP to increase amount between tics
@@ -339,13 +345,15 @@ enum class Mod
     DESPOIL                   = 896, // Increases THF Despoil chance
     PERFECT_DODGE             = 883, // Increases Perfect Dodge duration in seconds
     TRIPLE_ATTACK             = 302, // Percent chance
-    TREASURE_HUNTER           = 303, // Percent chance
+    TREASURE_HUNTER           = 303, // TH value
     SNEAK_ATK_DEX             = 874, // % DEX boost to Sneak Attack (if gear mod, needs to be equipped on hit)
     TRICK_ATK_AGI             = 520, // % AGI boost to Trick Attack (if gear mod, needs to be equipped on hit)
     MUG_EFFECT                = 835, // Mug effect as multiplier
     ACC_COLLAB_EFFECT         = 884, // Increases amount of enmity transferred for Accomplice/Collaborator
     HIDE_DURATION             = 885, // Hide duration increase (percentage based)
     GILFINDER                 = 897, // Gilfinder, duh
+    MAX_TREASURE_HUNTER       = 961, // Increases the maximum value of Treasure Hunter
+    TREASURE_HUNTER_PROC      = 962, // Increases the chance that the effects of Treasure Hunter will increase by a percentage
 
     // Paladin
     HOLY_CIRCLE_DURATION      = 857, // Holy Circle extended duration in seconds
@@ -354,12 +362,15 @@ enum class Mod
     SHIELD_MASTERY_TP         = 485, // Shield mastery TP bonus when blocking with a shield
     SENTINEL_EFFECT           = 837, // Sentinel effect in percents
     SHIELD_DEF_BONUS          = 905, // Shield Defense Bonus
+    PROTECT_EFFECT            = 963, // Increases the effectiveness of Protect effects received by a percentage
+    REPRISAL_EFFECT           = 964, // Increases the amount of blocked damage that Reprisal reflects back on an attacker by a percentage
 
     // Dark Knight
     ARCANE_CIRCLE_DURATION    = 858, // Arcane Circle extended duration in seconds
     SOULEATER_EFFECT          = 96,  // Souleater power in percents
     DESPERATE_BLOWS           = 906, // Adds ability haste to Last Resort
     STALWART_SOUL             = 907, // Reduces damage taken from Souleater
+    DREAD_SPIKES_DMG          = 965, // Increases the amount of HP that Dread Spikes steals by a percentage
 
     // Beastmaster
     TAME                      = 304, // Additional percent chance to charm
@@ -368,6 +379,8 @@ enum class Mod
     CHARM_CHANCE              = 391, // extra chance to charm (light+apollo staff ect)
     FERAL_HOWL_DURATION       = 503, // +20% duration per merit when wearing augmented Monster Jackcoat +2
     JUG_LEVEL_RANGE           = 564, // Decreases the level range of spawned jug pets. Maxes out at 2.
+    SIC_READY_RECAST          = 966, // Reduces the recast time of Sic and Ready in seconds (Ready, recast of each charge)
+
 
     // Bard
     MINNE_EFFECT              = 433, //
@@ -408,6 +421,10 @@ enum class Mod
     SHADOW_BIND_EXT           = 425, // Extends the time of shadowbind
     SCAVENGE_EFFECT           = 312, //
     SHARPSHOT                 = 314, //
+    VELOCITY_SHOT_DELAY       = 973, // Reduces ranged attack delay while under the effects of Velocity Shot by a percentage
+    TRUE_SHOT_DMG             = 974, // Increases ranged attack damage when performed at an appropriate distance by a percentage
+    DEAD_AIM_CRIT_DMG         = 975, // Increases critical damage dealt by ranged attacks by a percentage
+    BARRAGE_BONUS             = 976, // Increases the number of projectiles from Barrage
 
     // Samurai
     WARDING_CIRCLE_DURATION   = 95,  // Warding Circle extended duration in seconds
@@ -415,13 +432,16 @@ enum class Mod
     ZANSHIN                   = 306, // Zanshin percent chance
     THIRD_EYE_COUNTER_RATE    = 508, // Adds counter to 3rd eye anticipates & if using Seigan counter rate is increased by 15%
     THIRD_EYE_ANTICIPATE_RATE = 839, // Adds anticipate rate in percents
-
+    HASSO_SEIGAN_ZANSHIN_CAP  = 977, // Increases maximum chance of Zanshin activating while under the effects of Hasso and Seigan a percentage (cap above 25%)
+    THIRD_EYE_EVASIONS        = 978, // Increases the number of evasions from Third Eye
+    
     // Ninja
     UTSUSEMI                  = 307, // Everyone's favorite --tracks shadows.
     UTSUSEMI_BONUS            = 900, // Extra shadows from gear
     NINJA_TOOL                = 308, // Percent chance to not use a tool.
     NIN_NUKE_BONUS            = 522, // magic attack bonus for NIN nukes
     DAKEN                     = 911, // chance to throw a shuriken without consuming it
+    NINJUTSU_DURATION         = 979, // Increases the effect duration of ninjutsu by a percentage
 
     // Dragoon
     ANCIENT_CIRCLE_DURATION   = 859, // Ancient Circle extended duration in seconds
@@ -430,6 +450,10 @@ enum class Mod
     HIGH_JUMP_ENMITY_REDUCTION = 363, // for gear that reduces more enmity from high jump
     FORCE_JUMP_CRIT           = 828, // Critical hit rate bonus for jump and high jump
     WYVERN_EFFECTIVE_BREATH   = 829, // Increases the threshold for triggering healing breath/offensive breath more inclined to pick elemental weakness
+    WYVERN_ATTR_DBLATK        = 980, // Increases chance of attacking twice by a percentage for each time attributes are boosted
+    WYVERN_BREATH_DELAY       = 981, // Reduces the recast delay of Restoring Breath and Smiting Breath in seconds
+
+
 
     // Summoner
     AVATAR_PERPETUATION       = 371, // stores base cost of current avatar
@@ -445,6 +469,8 @@ enum class Mod
     // Blue Mage
     BLUE_POINTS               = 309, // Tracks extra blue points
     BLUE_LEARN_CHANCE         = 945, // Additional chance to learn blue magic
+    BLUE_TRAIT_BONUS          = 982, // Increases job traits gained from equipped blue magic. Does not affect Gilfinder, Double Attack, or Auto Refresh.
+    BLUE_MAGIC_ATTR_POTENCY   = 983, // Attributes that affect the potency of blue magic spells are considered to be n% higher when casting blue magic spells.
 
     // Corsair
     EXP_BONUS                 = 382, //
@@ -484,6 +510,7 @@ enum class Mod
     QUICK_DRAW_MACC           = 191, // Quick draw magic accuracy
     PHANTOM_ROLL              = 881, // Phantom Roll+ Effect from SOA Rings.
     PHANTOM_DURATION          = 882, // Phantom Roll Duration +.
+    QUICK_DRAW_DELAY          = 984, // Reduces the recast delay of Quick Draw in seconds per charge point.
 
     // Puppetmaster
     MANEUVER_BONUS            = 504, // Maneuver Stat Bonus
@@ -507,6 +534,7 @@ enum class Mod
     AUTO_EQUALIZER            = 941, // Reduces damage received according to damage taken
     AUTO_PERFORMANCE_BOOST    = 942, // Increases the performance of other attachments by a percentage
     AUTO_ANALYZER             = 943, // Causes the Automaton to mitigate damage from a special attack a number of times
+    AUTO_ELEM_CAPACITY        = 985, // Increases the automaton's elemental capacity for attachments
 
     // Dancer
     FINISHING_MOVES           = 333, // Tracks # of finishing moves
@@ -519,6 +547,7 @@ enum class Mod
     WALTZ_DELAY               = 497, // Waltz Ability Delay modifier (-1 mod is -1 second)
     SAMBA_PDURATION           = 498, // Samba percent duration bonus
     REVERSE_FLOURISH_EFFECT   = 836, // Reverse Flourish effect in tenths of squared term multiplier
+    MAX_FINISHING_MOVE_BONUS  = 986, // Increases the maximum number of finishing moves that may be stored
 
     // Scholar
     BLACK_MAGIC_COST          = 393, // MP cost for black magic (light/dark arts)
@@ -539,10 +568,15 @@ enum class Mod
     STORMSURGE_EFFECT         = 400, //
     SUBLIMATION_BONUS         = 401, //
     GRIMOIRE_SPELLCASTING     = 489, // "Grimoire: Reduces spellcasting time" bonus
+    STRATAGEM_RECAST          = 987, // Reduces stratagem recast time in seconds per 1 charge point.
+
+    // Runefencer
+    ENHANCING_RECEIVED_DUR    = 991, // Increases the duration of enhancing magic effects received by a percentage
+    INQUARTRATA_PARRY         = 992, // Increases parrying chance a percentage
 
     ENSPELL                   = 341, // stores the type of enspell active (0 if nothing)
     ENSPELL_DMG               = 343, // stores the base damage of the enspell before reductions
-    ENSPELL_DMG_BONUS         = 432, //
+    ENSPELL_DMG_BONUS         = 432, // Increases the damage of "En"-type spell
     ENSPELL_CHANCE            = 856, // Chance of enspell activating (0 = 100%, 10 = 10%, 30 = 30%, ...)
     SPIKES                    = 342, // store the type of spike spell active (0 if nothing)
     SPIKES_DMG                = 344, // stores the base damage of the spikes before reductions
@@ -550,6 +584,13 @@ enum class Mod
     TP_BONUS                  = 345, //
     SAVETP                    = 880, // SAVETP Effect for Miser's Roll / ATMA / Hagakure.
     CONSERVE_TP               = 944, // Conserve TP trait, random chance between 10 and 200 TP
+
+    PET_ATK_DEF               = 967, // Increases pet physical attack, ranged attack, and physical defense
+    PET_ACC_EVA               = 968, // Increases pet physical accuracy, ranged accuracy, and evasion
+    PET_MAB_MDB               = 969,  // Increases pet magic attack and magic defense
+    PET_MACC_MEVA             = 970, // Increases pet magic accuracy and evasion
+    PET_ATTR_BONUS            = 971, // Increases pet attributes
+    PET_TP_BONUS              = 972, // Increases pet TP bonus
 
     // Stores the amount of elemental affinity (elemental staves mostly) - damage, acc, and perpetuation is all handled separately
     FIRE_AFFINITY_DMG         = 347, // They're stored separately due to Magian stuff - they can grant different levels of
@@ -785,12 +826,14 @@ enum class Mod
     CONQUEST_BONUS            = 933, // Conquest points bonus granted (percentage)
     CONQUEST_REGION_BONUS     = 934, // Increases the influence points awarded to the player's nation when receiving conquest points
     CAMPAIGN_BONUS            = 935, // Increases the evaluation for allied forces by percentage
+    SUPERIOR_LEVEL            = 958, // Su Level (1-5)
+    ONE_HOUR_RECAST           = 989, // Decreases the recast time of one-hour abilities by n minutes. 
 
     // The spares take care of finding the next ID to use so long as we don't forget to list IDs that have been freed up by refactoring.
     // 570 through 825 used by WS DMG mods these are not spares.
-    // SPARE = 958, // stuff
-    // SPARE = 959, // stuff
-    // SPARE = 960, // stuff
+    // SPARE = 995
+    // SPARE = 996
+    // SPARE = 997
 };
 
 //temporary workaround for using enum class as unordered_map key until compilers support it
@@ -841,6 +884,7 @@ class CPetModifier : public CModifier
 public:
     CPetModifier(Mod type, PetModType pettype, int16 amount = 0);
     PetModType getPetModType();
+    
 
 private:
     PetModType m_pettype {PetModType::All};

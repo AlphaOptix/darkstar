@@ -24,7 +24,7 @@ function onUseAbility(player,target,ability,action)
         action:animation(target:getID(), action:animation(target:getID()) + 1)
     end
 
-    local duration = 30 + player:getMod(dsp.mod.SHADOW_BIND_EXT)
+    local duration = 30 + player:getMod(dsp.mod.SHADOW_BIND_EXT) + player:getJobPointValue(dsp.jp.SHADOWBIND_DURATION)
     local recycleChance = player:getMod(dsp.mod.RECYCLE) + player:getMerit(dsp.merit.RECYCLE)
     if (player:hasStatusEffect(dsp.effect.UNLIMITED_SHOT)) then
         player:delStatusEffect(dsp.effect.UNLIMITED_SHOT)
